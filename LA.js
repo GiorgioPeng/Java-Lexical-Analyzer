@@ -166,18 +166,18 @@ const mainAnalyse = (type, inputText) => {
         case 'string':
             tempResult = inputText.match(stringPattern)
             if (tempResult != null) {
-                resultSet.push({ string: '"', token: 'others' }) // 需要添加操作符号,会略过
+                resultSet.push({ string: '"', token: 'others' }) // record " sign
                 resultSet.push({ string: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
-                resultSet.push({ string: '"', token: 'others' }) // 需要添加操作符号,会略过
+                resultSet.push({ string: '"', token: 'others' }) // record " sign
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
         case 'char':
             tempResult = inputText.match(charPattern)
             if (tempResult != null) {
-                resultSet.push({ string: "'", token: 'others' }) // 需要添加操作符号,会略过
+                resultSet.push({ string: "'", token: 'others' }) // record ' sign
                 resultSet.push({ string: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
-                resultSet.push({ string: "'", token: 'others' }) // 需要添加操作符号,会略过
+                resultSet.push({ string: "'", token: 'others' }) // record ' sign
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
