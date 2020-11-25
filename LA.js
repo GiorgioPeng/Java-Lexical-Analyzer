@@ -133,11 +133,10 @@ const formatInput = (inputText) => {
  */
 const keywordsAnalyse = (inputText) => {
     for (keyword of keyWordsTable) {
-        if (inputText.startsWith(keyword)) {//如果是用这个开头,说明匹配成功
-            // console.log('keyword: ' + keyword)
+        if (inputText.startsWith(keyword)) {
             resultSet.push({ string: keyword, token: 'keyword' })
-            inputText = inputText.substr(keyword.length)// 删掉关键字
-            keywordMatch = true;// 准备再次循环, 处理多关键字的情况
+            inputText = inputText.substr(keyword.length)
+            keywordMatch = true;
             return [true, inputText]
         }
         else {
