@@ -9,9 +9,13 @@ const keyWordsTable = [
 
 const input = document.querySelector("#input")
 
+const tbody = document.querySelector('tbody')
+
 const signsTable = [
-    '++', '--', '==', '!=', '>=', '<=', '&&', '||', '!', '%', '&', '*', '(', ')', '-', '=', '+', ';',
-    '[', ']', '{', '}', ':', '\'', '"', '/', '?', '\\', '<', '>', ',', '.'
+    '++', '--', '==', '!=', '>=', '<=','+=','*=','-=','/=','%=',
+    '&&', '||', '!', '%', '&', '*', '(', ')', '-', '=', '+', ';',
+    '[', ']', '{', '}', ':', '\'', '"', '/', '?', '\\', '<', '>',
+    ',', '.'
 ]
 
 const resultSet = []
@@ -22,6 +26,21 @@ const resultSet = []
         后面(任意个):字母 或 _ 或 $ 或 数字 
 */
 const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
+
+/*
+    数值常量匹配
+*/
+const constantPattern = /^\d+/
+
+/**
+ * 字符串常量匹配
+ */
+const stringPattern = /^\".+\"/
+
+/**
+ * 字符常量匹配
+ */
+const charPattern = /^\'.\'/
 
 /*
     delete spaces
@@ -39,10 +58,10 @@ const returnDelete = (inputText) => {
 
 
 const createTableRow = (set) => {
-    `
+    return   `
     <tr>
-        <td>${set.string}</td>
         <td>${set.token}</td>
+        <td>${set.string}</td>
     </tr>
     `
 }
@@ -112,7 +131,7 @@ const lexicalAnalyze = () => {
         let keywordMatch = false;
         for (keyword of keyWordsTable) {
             if (tempString.startsWith(keyword)) {//如果是用这个开头,说明匹配成功
-                console.log('keyword: ' + keyword)
+                // console.log('keyword: ' + keyword)
                 resultSet.push({ string: keyword, token: 'keyword' })
                 tempString = tempString.substr(keyword.length)// 删掉关键字
                 keywordMatch = true;// 准备再次循环, 处理多关键字的情况
@@ -127,22 +146,44 @@ const lexicalAnalyze = () => {
             continue;
         }
 
-
-        // 变量标识符匹配(没有多个变量标识符的状态,多个至少会存在符号隔开)
-        let tempResult = tempString.match(identifierPattern)
-        /*
-         ["public", "p", "c", index: 0, input: "public static String main(String[] args) { int i =…: i -= 20; default: Byte b = '1'; } return a; } }", groups: undefined]
-        */
-        console.log(tempResult)
+        let tempResult = tempString.match(constantPattern)
         if (tempResult != null) {
-            console.log('identifier: ' + tempResult[0])
-            resultSet.push({ string: tempResult[0], token: 'identifier' })
+            resultSet.push({ string: tempResult[0], token: 'constant' })
+            tempString = tempString.substr(tempResult[0].length)
+        }
+        tempResult = null
+
+        tempResult = tempString.match(stringPattern)
+        if (tempResult != null) {
+            resultSet.push({ string: '"', token: 'others' }) // 需要添加操作符号,会略过
+            resultSet.push({ string: tempResult[0].substr(1,tempResult[0].length-2), token: 'constant' })
+            resultSet.push({ string: '"', token: 'others' }) // 需要添加操作符号,会略过
             tempString = tempString.substr(tempResult[0].length)
             // console.log(tempString)
         }
-        else {
-            console.log('reject')
-            // break;
+        tempResult = null
+
+        tempResult = tempString.match(charPattern)
+        if (tempResult != null) {
+            resultSet.push({ string: "'", token: 'others' }) // 需要添加操作符号,会略过
+            resultSet.push({ string: tempResult[0].substr(1,tempResult[0].length-2), token: 'constant' })
+            resultSet.push({ string: "'", token: 'others' }) // 需要添加操作符号,会略过
+            tempString = tempString.substr(tempResult[0].length)
+        }
+        tempResult = null
+
+
+        // 变量标识符匹配(没有多个变量标识符的状态,多个至少会存在符号隔开)
+        tempResult = tempString.match(identifierPattern)
+        /*
+         ["public", "p", "c", index: 0, input: "public static String main(String[] args) { int i =…: i -= 20; default: Byte b = '1'; } return a; } }", groups: undefined]
+        */
+        // console.log(tempResult)
+        if (tempResult != null) {
+            // console.log('identifier: ' + tempResult[0])
+            resultSet.push({ string: tempResult[0], token: 'identifier' })
+            tempString = tempString.substr(tempResult[0].length)
+            // console.log(tempString)
         }
 
         // 其他符号匹配
@@ -150,7 +191,7 @@ const lexicalAnalyze = () => {
             tempString = tempString.substr(1)
         for (sign of signsTable) {
             if (tempString.startsWith(sign)) {
-                console.log('sign: ' + sign)
+                // console.log('sign: ' + sign)
                 resultSet.push({ string: sign, token: 'others' })
                 tempString = tempString.substr(sign.length)// 删掉关键字
                 break;
@@ -159,14 +200,21 @@ const lexicalAnalyze = () => {
                 continue;
             }
         }
-        console.log('tempString: ' + tempString)
+        // console.log('tempString: ' + tempString)
     }
-    console.log(resultSet)
+    // console.log(resultSet)
 }
 
 const getInput = () => {
     input.value = formatInput(input.value)
-    setTimeout(()=>lexicalAnalyze(),0);
+    setTimeout(() => {
+        lexicalAnalyze()
+        resultSet.map(
+            (result) => {
+                tbody.innerHTML += createTableRow(result)
+            }
+        )
+    }, 0);
 }
 
 (
