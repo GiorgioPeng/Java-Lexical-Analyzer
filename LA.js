@@ -10,8 +10,8 @@ const keyWordsTable = [
 const input = document.querySelector("#input")
 
 const signsTable = [
-    '!', '%', '&', '*', '(', ')', '-', '=', '+', ';', '[', ']', '{', '}', ':', '\'', '"',
-    '/', '?', '\\', '<', '>', ',', '.'
+    '++', '--', '==', '!=', '>=', '<=', '&&', '||', '!', '%', '&', '*', '(', ')', '-', '=', '+', ';',
+    '[', ']', '{', '}', ':', '\'', '"', '/', '?', '\\', '<', '>', ',', '.'
 ]
 
 const resultSet = []
@@ -21,13 +21,13 @@ const resultSet = []
         开头: 字母 或 _ 或 $   
         后面(任意个):字母 或 _ 或 $ 或 数字 
 */
-const identifierPattern = /(\w|_|\$)(\w|_|\$|\d)*/
+const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
 
 /*
     delete spaces
 */
 const spaceDelete = (inputText) => {
-    return inputText.replace(/\s+/g, "");
+    return inputText.replace(/\s+/g, " ");
 }
 
 /*
@@ -90,24 +90,83 @@ const identifierAnalyze = (inputText) => {
                 lastIndex = signIndex
                 break;
             }
-            else{
+            else {
                 continue;
             }
         }
     }
-    if(lastIndex === 0){ // 说明没有找到符号
+    if (lastIndex === 0) { // 说明没有找到符号
         return false;
     }
-    
+
 
 }
 
 const lexicalAnalyze = () => {
+    let tempString = input.value
+    while (tempString.length > 0) {
+        if (tempString[0] === ' ') // 剔除空格
+            tempString = tempString.substr(1)
 
+        // 关键字匹配
+        let keywordMatch = false;
+        for (keyword of keyWordsTable) {
+            if (tempString.startsWith(keyword)) {//如果是用这个开头,说明匹配成功
+                console.log('keyword: ' + keyword)
+                resultSet.push({ string: keyword, token: 'keyword' })
+                tempString = tempString.substr(keyword.length)// 删掉关键字
+                keywordMatch = true;// 准备再次循环, 处理多关键字的情况
+                break;
+            }
+            else {
+                continue;
+            }
+        }
+        // 再次循环, 处理多关键字的情况
+        if (keywordMatch) {
+            continue;
+        }
+
+
+        // 变量标识符匹配(没有多个变量标识符的状态,多个至少会存在符号隔开)
+        let tempResult = tempString.match(identifierPattern)
+        /*
+         ["public", "p", "c", index: 0, input: "public static String main(String[] args) { int i =…: i -= 20; default: Byte b = '1'; } return a; } }", groups: undefined]
+        */
+        console.log(tempResult)
+        if (tempResult != null) {
+            console.log('identifier: ' + tempResult[0])
+            resultSet.push({ string: tempResult[0], token: 'identifier' })
+            tempString = tempString.substr(tempResult[0].length)
+            // console.log(tempString)
+        }
+        else {
+            console.log('reject')
+            // break;
+        }
+
+        // 其他符号匹配
+        if (tempString[0] === ' ') // 剔除空格
+            tempString = tempString.substr(1)
+        for (sign of signsTable) {
+            if (tempString.startsWith(sign)) {
+                console.log('sign: ' + sign)
+                resultSet.push({ string: sign, token: 'others' })
+                tempString = tempString.substr(sign.length)// 删掉关键字
+                break;
+            }
+            else {
+                continue;
+            }
+        }
+        console.log('tempString: ' + tempString)
+    }
+    console.log(resultSet)
 }
 
 const getInput = () => {
     input.value = formatInput(input.value)
+    setTimeout(()=>lexicalAnalyze(),0);
 }
 
 (
@@ -116,7 +175,14 @@ const getInput = () => {
             = (event) => {
                 if ((event.keyCode || event.which) == '9') {
                     event.preventDefault()
-                    input.value += '    '
+                    // 除了IE浏览器, 调整tab输入位置
+                    let currentPosition = input.selectionStart
+                    let frontPart = input.value.substring(0, currentPosition) + '    '
+                    input.value = frontPart + input.value.substring(currentPosition)
+
+                    // 调整光标位置
+                    input.selectionStart = frontPart.length
+                    input.selectionEnd = frontPart.length
                 }
             }
     }
