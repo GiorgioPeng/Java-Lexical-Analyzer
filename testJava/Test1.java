@@ -1,4 +1,6 @@
-public class Test {
+package testJava;
+
+public class Test1 {
     public static String main(String[] args) {
         int i = 0;
         String a = "abcdefg";

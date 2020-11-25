@@ -9,31 +9,38 @@
 
 <body>
     <div id="container">
-        <textarea id="input" placeholder="This program can scan JAVA language..."></textarea>
+        <textarea id="input"
+            placeholder="This program can scan JAVA language... You can upload a Java file (But please remove all comments or @xxxx which are in the file before you uploading) or input Java code in this textarea..."></textarea>
 
-        <button onClick="lexicalAnalyseStart()">Lexical Analyse</button>
+        <div id="functionButtons">
+            <input id="upload" type="file" onChange="upload(this)"></input>
+            <label for="upload" id="uploadLabel">Upload .java file</label>
+            <div id="lexicalAnalyse" onClick="lexicalAnalyseStart()">
+                Lexical Analyse
+            </div>
+        </div>
 
         <div id="output">
-        <table id="outputTable">
-            <thead>
-                <tr>
-                    <th colspan="2" style='font-size: 30px;border-bottom: 0.1px red solid;'>Analyse result</th>
-                </tr>
+            <table id="outputTable">
+                <thead>
+                    <tr>
+                        <th colspan="2" style='font-size: 30px;border-bottom: 0.1px red solid;'>Analyse result</th>
+                    </tr>
 
-                <tr>
-                    <th colspan="1">token</th>
-                    <th colspan="1">symbol</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+                    <tr>
+                        <th colspan="1">token</th>
+                        <th colspan="1">symbol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 
 <script src='./LA.js'></script>
-
+<script src='./loadJava.js'></script>
 <style type="text/css">
     html,
     body {
@@ -57,6 +64,56 @@
         resize: none;
     }
 
+    #functionButtons {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        height: 90vh;
+    }
+
+    #upload {
+        display: none;
+    }
+
+    #uploadLabel {
+        background-color: rgb(250, 113, 120);
+        cursor: pointer;
+        width: 200px;
+        text-align: center;
+        position: relative;
+    }
+
+    #uploadLabel::after {
+        content: '';
+        position: absolute;
+        left: 35%;
+        top: -28px;
+        border-left: 30px solid transparent;
+        border-bottom: 30px solid rgb(250, 113, 120);
+        border-right: 30px solid transparent;
+        border-top: 0;
+    }
+
+    #lexicalAnalyse {
+        background-color: lightskyblue;
+        cursor: pointer;
+        width: 200px;
+        text-align: center;
+        position: relative;
+    }
+
+    #lexicalAnalyse::after {
+        content: '';
+        position: absolute;
+        right: -30px;
+        top: -15px;
+        border-right: 0;
+        border-top: 30px solid transparent;
+        border-bottom: 30px solid transparent;
+        border-left: 30px solid lightskyblue;
+    }
+
     #output {
         height: 90vh;
         width: 40vw;
@@ -69,15 +126,14 @@
         border: 1px solid #333;
     }
 
-    td{
+    td {
         text-align: center;
     }
 
-    table{
+    table {
         height: 100%;
         width: 100%;
     }
-
 </style>
 
 </html>

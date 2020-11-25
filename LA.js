@@ -58,7 +58,7 @@ const constantPattern = /^\d+/
 /**
  * the match pattern of string
  */
-const stringPattern = /^\".+\"/
+const stringPattern = /^\"[^\"]+\"/
 
 /**
  * the match pattern of char
