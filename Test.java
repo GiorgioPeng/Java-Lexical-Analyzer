@@ -4,6 +4,8 @@ public class Test {
         String a = "abcdefg";
         if (i == 0) {
             i += 1;
+        } else {
+            i += 32323;
         }
         while (i < 10) {
             i++;
