@@ -225,7 +225,7 @@ const lexicalAnalyse = () => {
 
         let keywordMatch = false;
         [keywordMatch, tempString] = keywordsAnalyse(tempString)
-        // loop, to handle the situation of  mutiple keyword
+        // loop, to handle the situation of continuous mutiple keywords
         if (keywordMatch) {
             continue;
         }
