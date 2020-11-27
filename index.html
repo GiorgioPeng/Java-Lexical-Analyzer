@@ -10,7 +10,7 @@
 <body>
     <div id="container">
         <textarea id="input"
-            placeholder="This program can scan JAVA language... You can upload a Java file (Please remove all comments and annotations before you uploading) or input Java code in this textarea..."></textarea>
+            placeholder="This program can scan JAVA language... You can upload a Java file or input Java code in this textarea..."></textarea>
 
         <div id="functionButtons">
             <input id="upload" type="file" onChange="upload(this)"></input>
@@ -24,12 +24,13 @@
             <table id="outputTable">
                 <thead>
                     <tr>
-                        <th colspan="2" style='font-size: 30px;border-bottom: 0.1px red solid;'>Analyse result</th>
+                        <th colspan="3" style='font-size: 30px;border-bottom: 0.1px red solid;'>Analyse result</th>
                     </tr>
 
                     <tr>
+                        <th colspan="1">index</th>
                         <th colspan="1">token</th>
-                        <th colspan="1">symbol</th>
+                        <th colspan="1">attribute</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,6 +136,55 @@
         height: 100%;
         width: 100%;
     }
+
+    tbody {
+        counter-reset: index;
+    }
+
+    tbody>tr {
+        counter-increment: index;
+    }
+
+    tbody>tr:hover {
+        background: rgba(50, 50, 50, 0.5) !important;
+    }
+
+    tbody>tr:before {
+        background-color: bisque;
+        height: 100%;
+        text-align: center;
+        display: inline-block;
+        width: 100%;
+        content: counter(index);
+    }
+
+    @keyframes watch {
+        0% {
+            background: rgba(8, 8, 8, 0.5);
+            color: white;
+        }
+
+        100% {
+            background: rgba(188, 188, 188, 0.5);
+            color: black;
+        }
+    }
+
+    .stopWatch{
+        background-color:rgba(8,8,8,0.5);
+        font-size:30px;
+        color:white;
+        position:fixed;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        width:400px;
+        height:300px;
+        text-align:center;
+        line-height:300px;
+        animation:watch 1s linear infinite;
+    }
+
 </style>
 
 </html>

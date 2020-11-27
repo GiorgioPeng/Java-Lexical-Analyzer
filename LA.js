@@ -34,13 +34,13 @@ const signsTable = [
  * the analyse result set, a object array
  * {
  *  token: the token of corresponding symbols 
- *  string: the symbols which are analysed
+ *  attribute: the symbols which are analysed
  * }
  * 
  * e.g
  *              {
  *                  token: keyword,
- *                  string: int
+ *                  attribute: int
  *              }
  */
 const resultSet = []
@@ -56,9 +56,9 @@ const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
 const constantPattern = /^\d+/
 
 /**
- * the match pattern of string
+ * the match pattern of attribute
  */
-const stringPattern = /^\"[^\"]+\"/
+const attributePattern = /^\"[^\"]+\"/
 
 /**
  * the match pattern of char
@@ -84,11 +84,38 @@ const lineBreakDelete = (inputText) => {
 }
 
 /**
+ * to delete all comments which are start from //
+ * @param {string} inputText the origin input string
+ * @return {string} the result of handling
+ */
+const commentDelete = (inputText) => {
+    return inputText.replace(/\/\/.*/g, "")
+}
+
+/**
+ * to delete all annotation like @Override
+ * @param {string} inputText the origin input string
+ * @return {string} the result of handling
+ */
+const annotationDelete = (inputText) => {
+    return inputText.replace(/\@.*/g, "")
+}
+
+/**
+ * to delete all comments which are between /* 
+ * @param {string} inputText the origin input string
+ * @return {string} the result of handling
+ */
+const complexCommentDelete = (inputText) => {
+    return inputText.replace(/\/\*.*\*\//g, "")
+}
+
+/**
  * use result set to create a row of the output table
  * @param {object} set 
  * {
  *  token:
- *  string:
+ *  attribute:
  * }
  * @return {HTMLElement} the HTML element of the table row
  */
@@ -111,7 +138,7 @@ const createTableRow = (set) => {
     return `
     <tr style="background-color:${bgcolor}">
         <td>${set.token}</td>
-        <td>${set.string}</td>
+        <td>${set.attribute}</td>
     </tr>
     `
 }
@@ -122,7 +149,7 @@ const createTableRow = (set) => {
  * @return {string} the result string after handling
  */
 const formatInput = (inputText) => {
-    return lineBreakDelete(spaceDelete(inputText))
+    return complexCommentDelete(lineBreakDelete(spaceDelete(annotationDelete(commentDelete(inputText)))))
 }
 
 /**
@@ -134,7 +161,7 @@ const formatInput = (inputText) => {
 const keywordsAnalyse = (inputText) => {
     for (keyword of keyWordsTable) {
         if (inputText.startsWith(keyword)) {
-            resultSet.push({ string: keyword, token: 'keyword' })
+            resultSet.push({ attribute: keyword, token: 'keyword' })
             inputText = inputText.substr(keyword.length)
             keywordMatch = true;
             return [true, inputText]
@@ -158,32 +185,32 @@ const mainAnalyse = (type, inputText) => {
         case 'constant':
             tempResult = inputText.match(constantPattern)
             if (tempResult != null) {
-                resultSet.push({ string: tempResult[0], token: 'constant' })
+                resultSet.push({ attribute: tempResult[0], token: 'constant' })
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
-        case 'string':
-            tempResult = inputText.match(stringPattern)
+        case 'attribute':
+            tempResult = inputText.match(attributePattern)
             if (tempResult != null) {
-                resultSet.push({ string: '"', token: 'others' }) // record " sign
-                resultSet.push({ string: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
-                resultSet.push({ string: '"', token: 'others' }) // record " sign
+                resultSet.push({ attribute: '"', token: 'others' }) // record " sign
+                resultSet.push({ attribute: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
+                resultSet.push({ attribute: '"', token: 'others' }) // record " sign
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
         case 'char':
             tempResult = inputText.match(charPattern)
             if (tempResult != null) {
-                resultSet.push({ string: "'", token: 'others' }) // record ' sign
-                resultSet.push({ string: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
-                resultSet.push({ string: "'", token: 'others' }) // record ' sign
+                resultSet.push({ attribute: "'", token: 'others' }) // record ' sign
+                resultSet.push({ attribute: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
+                resultSet.push({ attribute: "'", token: 'others' }) // record ' sign
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
         case 'identifier':
             tempResult = inputText.match(identifierPattern)
             if (tempResult != null) {
-                resultSet.push({ string: tempResult[0], token: 'identifier' })
+                resultSet.push({ attribute: tempResult[0], token: 'identifier' })
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
@@ -203,7 +230,7 @@ const otherAnalyse = (inputText) => {
         inputText = inputText.substr(1)
     for (sign of signsTable) {
         if (inputText.startsWith(sign)) {
-            resultSet.push({ string: sign, token: 'others' })
+            resultSet.push({ attribute: sign, token: 'others' })
             inputText = inputText.substr(sign.length)
             break;
         }
@@ -231,7 +258,7 @@ const lexicalAnalyse = () => {
         }
 
         tempString = mainAnalyse('constant', tempString)
-        tempString = mainAnalyse('string', tempString)
+        tempString = mainAnalyse('attribute', tempString)
         tempString = mainAnalyse('char', tempString)
         tempString = mainAnalyse('identifier', tempString)
         tempString = otherAnalyse(tempString)
@@ -247,15 +274,28 @@ const resetTable = () => {
 }
 
 /**
+ * create a stopwatch element to tell the user that the page works normally
+ */
+const createStopWatch = () => {
+    const stopWatch = document.createElement('div')
+    stopWatch.innerHTML = `Running.......`
+    stopWatch.className = 'stopWatch'
+    document.body.appendChild(stopWatch)
+}
+
+/**
  * to analyse the input string
  */
 const lexicalAnalyseStart = () => {
     resetTable()
     input.value = formatInput(input.value)
-
+    // create the stop watch element
+    createStopWatch()
     // change the Macro-task queue, avoid blocking UI rendering
     setTimeout(() => {
         lexicalAnalyse()
+        // remove the stop watch when analysis finished
+        document.body.removeChild(document.body.lastChild)
         resultSet.map(
             (result) => {
                 tbody.innerHTML += createTableRow(result)

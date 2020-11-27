@@ -14,14 +14,11 @@ public class Exercise10_02 {
   static class BMI {
     private String name;
     private int age;
-    private double weight; // in pounds
-    private double height; // in inches
+    private double weight;
+    private double height; 
     public final double KILOGRAMS_PER_POUND = 0.45359237; 
     public final double METERS_PER_INCH = 0.0254;  
-    
-    /** Construct a BMI with the specified name, age, weight, 
-     * feet and inches
-     */
+
     public BMI(String name, int age, double weight, double feet, double inches) {
       this.name = name;
       this.age = age;
