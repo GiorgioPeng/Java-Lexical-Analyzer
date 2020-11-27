@@ -20,7 +20,7 @@ public class Test2 {
             case 2:
                 i -= 20;
             default:
-                Byte b = '1';
+                char b = '1';
         }
         /* 
             a huge number of comments

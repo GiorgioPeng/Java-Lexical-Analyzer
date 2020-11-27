@@ -18,7 +18,7 @@ public class Test1 {
             case 2:
                 i -= 20;
             default:
-                Byte b = '1';
+                char b = '1';
         }
         return a;
     }
