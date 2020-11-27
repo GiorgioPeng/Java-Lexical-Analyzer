@@ -53,7 +53,7 @@ const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
 /**
  * the match pattern of constant number
  */
-const constantPattern = /^\d+/
+const constantPattern = /^(\d|\.)+/
 
 /**
  * the match pattern of attribute
@@ -284,6 +284,71 @@ const createStopWatch = () => {
 }
 
 /**
+ * to detect whether the variable defining is wrong
+ * @return {Boolean} whether we should reject the code
+ */
+const errorDetect = () => {
+    const assignmentSet = resultSet.map((value, index) => {
+        if (value.token === 'others' && value.attribute === '=') {
+            // console.log(index)
+            return index
+        }
+        else {
+            return
+        }
+    }).filter(e => e != undefined)
+
+    let isReject = false
+    for (index of assignmentSet) {
+        switch (resultSet[index - 2].attribute) {
+            case 'int':
+                if (resultSet[index + 1].attribute.match(constantPattern) !== null)
+                    if (resultSet[index + 1].attribute.match(constantPattern)[0].length === resultSet[index + 1].attribute.length);
+                    else {
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'char':
+                if (
+                    resultSet[index + 1].attribute !== "'" ||
+                    resultSet[index + 2].attribute.length !== 1 ||
+                    resultSet[index + 3].attribute !== "'"
+                ) {
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'String':
+                if (resultSet[index + 1].attribute !== '"') {
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'double':
+                if (resultSet[index + 1].attribute.match(constantPattern) !== null)
+                    if (resultSet[index + 1].attribute.match(constantPattern)[0].length === resultSet[index + 1].attribute.length);
+                    else {
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return isReject
+}
+
+/**
  * to analyse the input string
  */
 const lexicalAnalyseStart = () => {
@@ -294,13 +359,15 @@ const lexicalAnalyseStart = () => {
     // change the Macro-task queue, avoid blocking UI rendering
     setTimeout(() => {
         lexicalAnalyse()
-        // remove the stop watch when analysis finished
         document.body.removeChild(document.body.lastChild)
-        resultSet.map(
-            (result) => {
-                tbody.innerHTML += createTableRow(result)
-            }
-        )
+        errorDetect() ? alert('There is a bug!') : (() => {
+            // remove the stop watch when analysis finished
+            resultSet.map(
+                (result) => {
+                    tbody.innerHTML += createTableRow(result)
+                }
+            )
+        })()
     }, 0);
 }
 
