@@ -61,7 +61,7 @@ const constantPattern = /^-?\d+(\.\d+)?/
 const stringPattern = /^\"[^\"]+\"/
 
 /**
- * the match pattern of int/byt
+ * the match pattern of int
  */
 const intPattern = /^-?\d+/
 
