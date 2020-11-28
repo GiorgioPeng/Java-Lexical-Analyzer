@@ -56,9 +56,9 @@ const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
 const constantPattern = /^-?\d+(\.\d+)?/
 
 /**
- * the match pattern of attribute
+ * the match pattern of String
  */
-const attributePattern = /^\"[^\"]+\"/
+const stringPattern = /^\"[^\"]+\"/
 
 /**
  * the match pattern of int/byt
@@ -200,8 +200,8 @@ const mainAnalyse = (type, inputText) => {
                 inputText = inputText.substr(tempResult[0].length)
             }
             break;
-        case 'attribute':
-            tempResult = inputText.match(attributePattern)
+        case 'String':
+            tempResult = inputText.match(stringPattern)
             if (tempResult != null) {
                 resultSet.push({ attribute: '"', token: 'others' }) // record " sign
                 resultSet.push({ attribute: tempResult[0].substr(1, tempResult[0].length - 2), token: 'constant' })
@@ -269,7 +269,7 @@ const lexicalAnalyse = () => {
         }
 
         tempString = mainAnalyse('constant', tempString)
-        tempString = mainAnalyse('attribute', tempString)
+        tempString = mainAnalyse('String', tempString)
         tempString = mainAnalyse('char', tempString)
         tempString = mainAnalyse('identifier', tempString)
         tempString = otherAnalyse(tempString)
