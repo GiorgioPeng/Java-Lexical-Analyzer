@@ -81,8 +81,15 @@
         background-color: rgb(250, 113, 120);
         cursor: pointer;
         width: 200px;
-        text-align: center;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+        font-weight: bolder;
         position: relative;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px 1px dimgrey;
     }
 
     #uploadLabel::after {
@@ -100,19 +107,15 @@
         background-color: lightskyblue;
         cursor: pointer;
         width: 200px;
-        text-align: center;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+        font-weight: bolder;
         position: relative;
-    }
-
-    #lexicalAnalyse::after {
-        content: '';
-        position: absolute;
-        right: -30px;
-        top: -15px;
-        border-right: 0;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
-        border-left: 30px solid lightskyblue;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px 1px dimgrey;
     }
 
     #output {
@@ -152,26 +155,26 @@
     tbody>tr:before {
         background-color: bisque;
         height: 100%;
-        text-align: center;
-        display: inline-block;
+        justify-content: center;
+        align-items: center;
+        display: inline-flex;
         width: 100%;
         content: counter(index);
     }
 
-    .stopWatch{
-        background-color:rgba(8,8,8,0.5);
-        font-size:30px;
-        color:white;
-        position:fixed;
-        left:50%;
-        top:50%;
-        transform:translate(-50%,-50%);
-        width:400px;
-        height:300px;
-        text-align:center;
-        line-height:300px;
+    .stopWatch {
+        background-color: rgba(8, 8, 8, 0.5);
+        font-size: 30px;
+        color: white;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 300px;
+        text-align: center;
+        line-height: 300px;
     }
-
 </style>
 
 </html>

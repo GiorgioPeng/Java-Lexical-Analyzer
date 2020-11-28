@@ -53,7 +53,7 @@ const identifierPattern = /^(\w|_|\$)(\w|_|\$|\d)*/
 /**
  * the match pattern of constant number
  */
-const constantPattern = /^(\d|\.)+/
+const constantPattern = /^-?\d+(\.\d+)?/
 
 /**
  * the match pattern of attribute
@@ -61,9 +61,20 @@ const constantPattern = /^(\d|\.)+/
 const attributePattern = /^\"[^\"]+\"/
 
 /**
+ * the match pattern of int/byt
+ */
+const intPattern = /^-?\d+/
+
+/**
  * the match pattern of char
  */
 const charPattern = /^\'.\'/
+
+/**
+ * the match pattern of float
+ */
+const floatPattern = /^-?\d+(\.\d+)?/
+
 
 /**
  * to replace ≥ 1 spaces to only one space
@@ -290,7 +301,6 @@ const createStopWatch = () => {
 const errorDetect = () => {
     const assignmentSet = resultSet.map((value, index) => {
         if (value.token === 'others' && value.attribute === '=') {
-            // console.log(index)
             return index
         }
         else {
@@ -301,14 +311,74 @@ const errorDetect = () => {
     let isReject = false
     for (index of assignmentSet) {
         switch (resultSet[index - 2].attribute) {
-            case 'int':
-                if (resultSet[index + 1].attribute.match(constantPattern) !== null)
-                    if (resultSet[index + 1].attribute.match(constantPattern)[0].length === resultSet[index + 1].attribute.length);
+            case 'byte':
+                if (resultSet[index + 1].attribute.match(intPattern) !== null)
+                    if (
+                        resultSet[index + 1].attribute.match(intPattern)[0].length === resultSet[index + 1].attribute.length &&
+                        parseInt(resultSet[index + 1].attribute) >= -128 &&
+                        parseInt(resultSet[index + 1].attribute) <= 127
+                    );
                     else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                         isReject = true;
                         return isReject
                     }
                 else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'int':
+                if (resultSet[index + 1].attribute.match(intPattern) !== null)
+                    if (
+                        resultSet[index + 1].attribute.match(intPattern)[0].length === resultSet[index + 1].attribute.length &&
+                        parseInt(resultSet[index + 1].attribute) >= -2147483648 &&
+                        parseInt(resultSet[index + 1].attribute) <= 2147483647
+                    );
+                    else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'short':
+                if (resultSet[index + 1].attribute.match(intPattern) !== null)
+                    if (
+                        resultSet[index + 1].attribute.match(intPattern)[0].length === resultSet[index + 1].attribute.length &&
+                        parseInt(resultSet[index + 1].attribute) >= -32768 &&
+                        parseInt(resultSet[index + 1].attribute) <= 32767
+                    );
+                    else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'long':
+                if (resultSet[index + 1].attribute.match(intPattern) !== null)
+                    if (
+                        resultSet[index + 1].attribute.match(intPattern)[0].length === resultSet[index + 1].attribute.length &&
+                        parseInt(resultSet[index + 1].attribute) >= -9223372036854774808n &&
+                        parseInt(resultSet[index + 1].attribute) <= 9223372036854774807n
+                    );
+                    else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                     isReject = true;
                     return isReject
                 }
@@ -319,24 +389,50 @@ const errorDetect = () => {
                     resultSet[index + 2].attribute.length !== 1 ||
                     resultSet[index + 3].attribute !== "'"
                 ) {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                     isReject = true;
                     return isReject
                 }
                 break;
             case 'String':
                 if (resultSet[index + 1].attribute !== '"') {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                     isReject = true;
                     return isReject
                 }
                 break;
             case 'double':
-                if (resultSet[index + 1].attribute.match(constantPattern) !== null)
-                    if (resultSet[index + 1].attribute.match(constantPattern)[0].length === resultSet[index + 1].attribute.length);
+                if (resultSet[index + 1].attribute.match(floatPattern) !== null)
+                    if (resultSet[index + 1].attribute.match(floatPattern)[0].length === resultSet[index + 1].attribute.length);
                     else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                         isReject = true;
                         return isReject
                     }
                 else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'float':
+                if (resultSet[index + 1].attribute.match(floatPattern) !== null)
+                    if (resultSet[index + 1].attribute.match(floatPattern)[0].length === resultSet[index + 1].attribute.length);
+                    else {
+                        console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                        isReject = true;
+                        return isReject
+                    }
+                else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
+                    isReject = true;
+                    return isReject
+                }
+                break;
+            case 'boolean':
+                if (resultSet[index + 1].attribute === 'true' || resultSet[index + 1].attribute === 'false');
+                else {
+                    console.log('Error is around: ' + resultSet[index - 2].attribute + ' ' + resultSet[index - 1].attribute + ' ' + resultSet[index].attribute + ' ' + resultSet[index + 1].attribute)
                     isReject = true;
                     return isReject
                 }
@@ -360,7 +456,7 @@ const lexicalAnalyseStart = () => {
     setTimeout(() => {
         lexicalAnalyse()
         document.body.removeChild(document.body.lastChild)
-        errorDetect() ? alert('There is a bug!') : (() => {
+        errorDetect() ? alert('There is a bug! Please look up the console to get detail of the bug') : (() => {
             // remove the stop watch when analysis finished
             resultSet.map(
                 (result) => {
